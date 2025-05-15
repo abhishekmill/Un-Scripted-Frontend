@@ -10,7 +10,19 @@ export function Model(props) {
 
   const [isMaleKnightMoved, setIsMaleKnightMoved] = useState(false);
   const [isAnimRunning, setIsAnimRunning] = useState(false);
+
+  const handleRepeat = () => {
+    setIsAnimRunning(true);
+    console.log("animation is running ");
+
+    setTimeout(() => {
+      setIsAnimRunning(false);
+      console.log("animation is finished ");
+    }, 2500);
+  };
+
   function playAnimation(name, reverse = false) {
+    handleRepeat();
     const action = actions[name];
     if (!action) return;
 
@@ -97,7 +109,8 @@ export function Model(props) {
             </Box>
             <Box
               onPointerMove={(e) => {
-                // e.stopPropagation();
+                e.stopPropagation();
+                if (isAnimRunning) return;
                 if (!isMaleKnightMoved) {
                   maleMoveKnightForward();
                 } else {
