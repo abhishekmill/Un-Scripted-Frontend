@@ -9,6 +9,7 @@ export function Model(props) {
   console.log(actions);
 
   const [isMaleKnightMoved, setIsMaleKnightMoved] = useState(false);
+  const [isFemaleKnightMoved, setIsFemaleKnightMoved] = useState(false);
   const [isAnimRunning, setIsAnimRunning] = useState(false);
 
   const handleRepeat = () => {
@@ -18,7 +19,7 @@ export function Model(props) {
     setTimeout(() => {
       setIsAnimRunning(false);
       console.log("animation is finished ");
-    }, 2500);
+    }, 3000);
   };
 
   function playAnimation(name, reverse = false) {
@@ -66,11 +67,13 @@ export function Model(props) {
   };
 
   const femaleMoveKnightForward = () => {
+    setIsFemaleKnightMoved(true);
     playAnimation("Female_Move_Knight", false);
     playAnimation("CP_F_Knight_Move_Forward", false);
   };
 
   const femaleMoveKnightReverse = () => {
+    setIsFemaleKnightMoved(false);
     playAnimation("Female_Move_Knight", true);
     playAnimation("CP_F_Knight_Move_Forward", true);
   };
@@ -104,8 +107,16 @@ export function Model(props) {
       <group name="Scene">
         <group name="Armature">
           <group name="Male_Rob">
-            <Box position={[-0.5, 1.5, 0]} scale={[0.3, 0.3, 0.4]}>
-              <meshStandardMaterial transparent />
+            <Box
+              onPointerMove={(e) => {
+                e.stopPropagation();
+                if (isAnimRunning) return;
+                maleLook();
+              }}
+              position={[-0.5, 1.5, 0]}
+              scale={[0.3, 0.3, 0.4]}
+            >
+              <meshStandardMaterial transparent opacity={0} />
             </Box>
             <Box
               onPointerMove={(e) => {
@@ -117,10 +128,10 @@ export function Model(props) {
                   maleMoveKnightReverse();
                 }
               }}
-              position={[-0.6, 1, 0.1]}
+              position={[-0.6, 1, 0.2]}
               scale={[0.3, 0.6, 0.4]}
             >
-              <meshStandardMaterial transparent />
+              <meshStandardMaterial transparent opacity={0} />
             </Box>
             <skinnedMesh
               onPointerEnter={(e) => {
@@ -160,6 +171,32 @@ export function Model(props) {
         </group>
         <group name="Armature001">
           <group name="Female_Rob">
+            <Box
+              onPointerMove={(e) => {
+                e.stopPropagation();
+                if (isAnimRunning) return;
+                femaleLook();
+              }}
+              position={[0.5, 1.5, 0]}
+              scale={[0.3, 0.3, 0.4]}
+            >
+              <meshStandardMaterial transparent opacity={0} />
+            </Box>
+            <Box
+              onPointerMove={(e) => {
+                e.stopPropagation();
+                if (isAnimRunning) return;
+                if (!isFemaleKnightMoved) {
+                  femaleMoveKnightForward();
+                } else {
+                  femaleMoveKnightReverse();
+                }
+              }}
+              position={[0.6, 1, 0.2]}
+              scale={[0.3, 0.6, 0.4]}
+            >
+              <meshStandardMaterial transparent opacity={0} />
+            </Box>
             <skinnedMesh
               name="Female"
               geometry={nodes.Female.geometry}
