@@ -1,60 +1,128 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useGLTF, useAnimations, Box } from "@react-three/drei";
-import { useControls } from "leva";
 import * as THREE from "three";
 export function Model(props) {
   const group = useRef();
   const { nodes, materials, animations } = useGLTF("/3D_Model/Robot_M_F.glb");
-  const { actions, mixer } = useAnimations(animations, group);
-  const animationNames = useMemo(() => Object.keys(actions), [actions]);
+  const { actions } = useAnimations(animations, group);
 
-  const { currentAnimation } = useControls({
-    currentAnimation: {
-      options: animationNames,
-      value: animationNames[0],
-    },
-  });
+  console.log(actions);
 
-  useEffect(() => {
-    const action = actions[currentAnimation];
-
+  const [isMaleKnightMoved, setIsMaleKnightMoved] = useState(false);
+  const [isAnimRunning, setIsAnimRunning] = useState(false);
+  function playAnimation(name, reverse = false) {
+    const action = actions[name];
     if (!action) return;
+
+    const clipDuration = action.getClip().duration;
+
+    // If already playing in this direction, skip
+    if (action.isRunning() && action.timeScale > 0 === !reverse) return;
 
     action.reset();
     action.setLoop(THREE.LoopOnce, 1);
     action.clampWhenFinished = true;
-    action.fadeIn(0.3).play();
 
-    const handleFinished = (e) => {
-      if (e.action === action) {
-        console.log("Animation finished:", currentAnimation);
-      }
-    };
+    action.timeScale = reverse ? -1 : 1;
+    action.time = reverse ? clipDuration : 0;
 
-    action.getMixer().addEventListener("finished", handleFinished);
+    action.play();
+
+    if (reverse) {
+      // Manually stop action when time reaches 0 (since mixer doesn't auto-stop in reverse)
+      const onLoopFinished = () => {
+        if (action.time <= 0) {
+          action.stop();
+          action.getMixer().removeEventListener("finished", onLoopFinished);
+        }
+      };
+
+      action.getMixer().addEventListener("finished", onLoopFinished);
+    }
+  }
+
+  const maleMoveKnightForward = () => {
+    setIsMaleKnightMoved(true);
+    playAnimation("Male_Move_Knight", false);
+    playAnimation("CP_M_Knight_Move_Forward", false);
+  };
+
+  const maleMoveKnightReverse = () => {
+    setIsMaleKnightMoved(false);
+    playAnimation("Male_Move_Knight", true);
+    playAnimation("CP_M_Knight_Move_Forward", true);
+  };
+
+  const femaleMoveKnightForward = () => {
+    playAnimation("Female_Move_Knight", false);
+    playAnimation("CP_F_Knight_Move_Forward", false);
+  };
+
+  const femaleMoveKnightReverse = () => {
+    playAnimation("Female_Move_Knight", true);
+    playAnimation("CP_F_Knight_Move_Forward", true);
+  };
+
+  const femaleLook = () => {
+    playAnimation("Female_Look", false);
+  };
+
+  const maleLook = () => {
+    playAnimation("Male_Look", false);
+  };
+  useEffect(() => {
+    if (
+      actions["Female_Look"] &&
+      actions["Male_Look"] &&
+      actions["CP_M_Knight_Move_Forward"] &&
+      actions["Male_Move_Knight"] &&
+      actions["Female_Move_Knight"]
+    ) {
+    }
 
     return () => {
-      action.getMixer().removeEventListener("finished", handleFinished);
+      Object.values(actions).forEach((action) => {
+        if (action?.fadeOut) action.fadeOut(0.3);
+      });
     };
-  }, [currentAnimation, actions]);
+  }, [actions]);
 
   return (
     <group ref={group} {...props} dispose={null}>
       <group name="Scene">
         <group name="Armature">
           <group name="Male_Rob">
+            <Box position={[-0.5, 1.5, 0]} scale={[0.3, 0.3, 0.4]}>
+              <meshStandardMaterial transparent />
+            </Box>
+            <Box
+              onPointerMove={(e) => {
+                // e.stopPropagation();
+                if (!isMaleKnightMoved) {
+                  maleMoveKnightForward();
+                } else {
+                  maleMoveKnightReverse();
+                }
+              }}
+              position={[-0.6, 1, 0.1]}
+              scale={[0.3, 0.6, 0.4]}
+            >
+              <meshStandardMaterial transparent />
+            </Box>
             <skinnedMesh
+              onPointerEnter={(e) => {
+                e.stopPropagation();
+                if (!isMaleKnightMoved) {
+                  maleMoveKnightForward;
+                } else {
+                  maleMoveKnightReverse;
+                }
+              }}
               name="Male"
               geometry={nodes.Male.geometry}
-              // material={materials.Male}
+              material={materials.Male}
               skeleton={nodes.Male.skeleton}
-            >
-              <meshStandardMaterial
-                color={"black"}
-                metalness={0.3}
-                roughness={0.4}
-              />
-            </skinnedMesh>
+            />
             <skinnedMesh
               name="Male_1"
               geometry={nodes.Male_1.geometry}
@@ -67,9 +135,6 @@ export function Model(props) {
               material={materials.Eyes}
               skeleton={nodes.Male_2.skeleton}
             />
-            <Box position={[-0.5, 1, 0.2]} scale={[0.3, 0.5, 0.5]}>
-              <meshStandardMaterial transparent opacity={1} />
-            </Box>
           </group>
           <primitive object={nodes.Root} />
           <primitive object={nodes.CTRL_COG} />
@@ -100,9 +165,6 @@ export function Model(props) {
               material={materials.Eyes2}
               skeleton={nodes.Female_2.skeleton}
             />
-            <Box position={[0.5, 1, 0.2]} scale={[0.3, 0.5, 0.5]}>
-              <meshStandardMaterial transparent opacity={1} />
-            </Box>
           </group>
           <primitive object={nodes.Root_1} />
           <primitive object={nodes.CTRL_COG_1} />
@@ -173,4 +235,4 @@ export function Model(props) {
   );
 }
 
-useGLTF.preload("/Robot_M_F.glb");
+useGLTF.preload("/3D_Model/Robot_M_F.glb");

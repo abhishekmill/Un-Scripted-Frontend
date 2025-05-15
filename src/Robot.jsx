@@ -2,38 +2,48 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useGLTF, useAnimations, Box } from "@react-three/drei";
 import { useControls } from "leva";
 import * as THREE from "three";
-import { useGraph } from "@react-three/fiber";
+import { useFrame, useGraph } from "@react-three/fiber";
 import { SkeletonUtils } from "three-stdlib";
 
 export function Robot(props) {
-  const group = React.useRef();
+  const group = useRef();
   const { scene, animations } = useGLTF("/3D_Model/Robot_M_F-transformed.glb");
-  const clone = React.useMemo(() => SkeletonUtils.clone(scene), [scene]);
+  const clone = useMemo(() => SkeletonUtils.clone(scene), [scene]);
   const { nodes, materials } = useGraph(clone);
   const { actions, mixer } = useAnimations(animations, group);
   const animationNames = useMemo(() => Object.keys(actions), [actions]);
 
-  console.log(animationNames);
+  console.log("Available animations:", animationNames);
+  const [isAnimRunning, setIsAnimRunning] = useState(false);
+  const currentActionRef = useRef(null);
 
-  // leva UI
-  const { currentAnimation } = useControls({
-    currentAnimation: {
-      options: animationNames,
-      value: animationNames[0],
-    },
-  });
+  // // Leva UI controls
+  // const { currentAnimation } = useControls({
+  //   currentAnimation: {
+  //     options: animationNames,
+  //     value: animationNames[0] || "Male_Idle",
+  //   },
+  // });
+
+  // // Track animation state
 
   // useEffect(() => {
-  //   console.log(currentAnimation);
+  //   if (!currentAnimation || !actions[currentAnimation]) return;
+
+  //   // Fade out previous animation if it exists
+  //   if (currentActionRef.current) {
+  //     currentActionRef.current.fadeOut(0.3);
+  //   }
 
   //   const action = actions[currentAnimation];
-
-  //   if (!action) return;
-
-  //   action.reset();
+  //   action.paused = false;
+  //   // action.reset();
   //   action.setLoop(THREE.LoopOnce, 1);
   //   action.clampWhenFinished = true;
   //   action.fadeIn(0.3).play();
+
+  //   // Update current action reference
+  //   currentActionRef.current = action;
 
   //   const handleFinished = (e) => {
   //     if (e.action === action) {
@@ -41,16 +51,18 @@ export function Robot(props) {
   //     }
   //   };
 
-  //   action.getMixer().addEventListener("finished", handleFinished);
+  //   // Add event listener to detect when animation finishes
+  //   mixer.addEventListener("finished", handleFinished);
 
   //   return () => {
-  //     action.getMixer().removeEventListener("finished", handleFinished);
+  //     // Proper cleanup of event listener
+  //     mixer.removeEventListener("finished", handleFinished);
   //   };
-  // }, [currentAnimation, actions]);
+  // }, [currentAnimation, actions, mixer]);
 
-  const [isAnimRunning, setIsAnimRunning] = useState(false);
-  const currentActionRef = useRef();
-  const playAnimation = (names, onAnimationEnd) => {
+  // Function to play specific animations
+
+  const playAnimation = (names, onAnimationStart, onAnimationEnd) => {
     const animationNames = Array.isArray(names) ? names : [names];
     const validActions = animationNames
       .map((name) => actions[name])
@@ -61,9 +73,12 @@ export function Robot(props) {
       return;
     }
 
-    if (isAnimRunning) return;
+    if (isAnimRunning) {
+      console.log("Animation already running, skipping");
+      return;
+    }
 
-    setIsAnimRunning(true);
+    console.log("Playing animations:", animationNames);
 
     // Fade out previous action
     if (currentActionRef.current) {
@@ -71,37 +86,50 @@ export function Robot(props) {
     }
 
     let completedCount = 0;
+    const finishedHandlers = {};
 
     validActions.forEach((action) => {
-      action.reset();
       action.setLoop(THREE.LoopOnce, 1);
       action.clampWhenFinished = true;
       action.fadeIn(0.3).play();
 
-      // Save current actions
+      // Save current action
       currentActionRef.current = action;
 
-      // Remove any existing 'finished' listeners
-      action.getMixer().removeEventListener("finished");
-
-      // Add listener to track completion
-      action.getMixer().addEventListener("finished", (e) => {
-        if (animationNames.includes(e.action.getClip().name)) {
+      // Create a specific handler for this action
+      const handleFinished = (e) => {
+        if (e.action === action) {
+          console.log("Animation completed:", action.getClip().name);
           completedCount++;
+
+          // Check if all animations are complete
           if (completedCount === validActions.length) {
-            setIsAnimRunning(false);
-            onAnimationEnd?.();
+            if (onAnimationEnd) onAnimationEnd();
           }
+
+          // Remove this specific listener
+          mixer.removeEventListener(
+            "finished",
+            finishedHandlers[action.getClip().name]
+          );
         }
-      });
+      };
+
+      finishedHandlers[action.getClip().name] = handleFinished;
+
+      // Add listener
+      mixer.addEventListener("finished", handleFinished);
     });
   };
 
   useEffect(() => {
-    playAnimation(["Male_Idle", "Female_Idle"], () => {
-      console.log("Both animations completed.");
-    });
+    const timer = setTimeout(() => {
+      playAnimation(["CP_M_Drop_Entry", "CP_F_Drop_Entry"], () => {});
+    }, 100);
+
+    return () => clearTimeout(timer);
   }, []);
+
   return (
     <group ref={group} {...props} dispose={null}>
       <group name="Scene">
@@ -148,31 +176,36 @@ export function Robot(props) {
           >
             <meshStandardMaterial color={"black"} />
           </mesh>
-          <mesh
-            name="Cube064_2"
-            castShadow
-            receiveShadow
-            geometry={nodes.Cube064_2.geometry}
-            material={materials.Chess_Board_GREY}
-          />
-          <mesh
-            name="Cube064_3"
-            castShadow
-            receiveShadow
-            geometry={nodes.Cube064_3.geometry}
-            material={materials.Chess_Board_BLK}
-          />
-          <mesh
-            name="Cube064_4"
-            castShadow
-            receiveShadow
-            geometry={nodes.Cube064_4.geometry}
-            material={materials.Border}
-          />
+          <group>
+            <mesh
+              name="Cube064_2"
+              castShadow
+              receiveShadow
+              geometry={nodes.Cube064_2.geometry}
+              material={materials.Chess_Board_GREY}
+            />
+            <mesh
+              name="Cube064_3"
+              castShadow
+              receiveShadow
+              geometry={nodes.Cube064_3.geometry}
+              material={materials.Chess_Board_BLK}
+            />
+            <mesh
+              name="Cube064_4"
+              castShadow
+              receiveShadow
+              geometry={nodes.Cube064_4.geometry}
+              material={materials.Border}
+            />
+          </group>
         </group>
         <group name="Male_Rob">
           <skinnedMesh
-            onPointerEnter={() => playAnimation(["Male_Look"])}
+            onPointerEnter={() => {
+              console.log("Male robot hover - playing Look animation");
+              playAnimation("Male_Look");
+            }}
             name="Male"
             geometry={nodes.Male.geometry}
             // material={materials.Male}
@@ -199,7 +232,8 @@ export function Robot(props) {
           <Box
             onPointerEnter={(e) => {
               e.stopPropagation();
-              playAnimation(["Male_Move_Knight", "CP_M_Knight_Forward_Wobble"]);
+
+              playAnimation(["Male_Move_Knight", "CP_M_Knight_Move_Forward"]);
             }}
             position={[-0.56, 1.1, 0.23]}
             scale={[0.2, 0.39, 0.5]}
@@ -209,7 +243,10 @@ export function Robot(props) {
         </group>
         <group name="Female_Rob">
           <skinnedMesh
-            onPointerEnter={() => playAnimation(["Female_Look"])}
+            onPointerEnter={() => {
+              console.log("Female robot hover - playing Look animation");
+              playAnimation("Female_Look");
+            }}
             name="Female"
             geometry={nodes.Female.geometry}
             material={materials.Female}
@@ -236,6 +273,9 @@ export function Robot(props) {
           <Box
             onPointerEnter={(e) => {
               e.stopPropagation();
+              console.log(
+                "Female knight box hover - playing Knight movement animations"
+              );
               playAnimation(["Female_Move_Knight", "CP_F_Knight_Move_Forward"]);
             }}
             position={[0.54, 1.13, 0.2]}
@@ -262,4 +302,5 @@ export function Robot(props) {
   );
 }
 
-useGLTF.preload("/Robot_M_F-transformed.glb");
+// Make sure these paths match exactly
+useGLTF.preload("/3D_Model/Robot_M_F-transformed.glb");

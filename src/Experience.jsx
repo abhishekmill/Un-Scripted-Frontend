@@ -30,7 +30,7 @@ const Experience = () => {
         shadows
         dpr={[1, 2]}
         gl={{ antialias: false }}
-        camera={{ position: [0, 0, 5], fov: 45 }}
+        camera={{ position: [0, 1.5, 5], fov: 45 }}
       >
         <directionalLight
           position={[position.x, position.y, position.z]}
@@ -50,8 +50,8 @@ const Experience = () => {
         {/* <OrbitControls /> */}
 
         <group position={[0, -3.7, 0]} scale={3}>
-          {/* <Model /> */}
-          <Robot />
+          <Model />
+          {/* <Robot /> */}
         </group>
 
         <EffectComposer multisampling={5}>
