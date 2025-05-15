@@ -85,6 +85,24 @@ export function Model(props) {
   const maleLook = () => {
     playAnimation("Male_Look", false);
   };
+
+  const chessDead = () => {
+    playAnimation("CP_F_Dead", false);
+  };
+  const chessEntry = () => {
+    playAnimation("CP_F_Drop_Entry", false);
+  };
+  const chessFemaleKnightForwardDead = () => {
+    playAnimation("CP_F_Knight_Forward_Dead", false);
+  };
+  const chessMaleKnightForwardDead = () => {
+    playAnimation("CP_M_Knight_Forward_Dead", false);
+  };
+  const chessWobble = () => {
+    playAnimation("CP_F_Wobble", false);
+    playAnimation("CP_M_Wobble", false);
+  };
+
   useEffect(() => {
     if (
       actions["Female_Look"] &&
@@ -93,6 +111,7 @@ export function Model(props) {
       actions["Male_Move_Knight"] &&
       actions["Female_Move_Knight"]
     ) {
+      chessWobble();
     }
 
     return () => {
@@ -100,8 +119,9 @@ export function Model(props) {
         if (action?.fadeOut) action.fadeOut(0.3);
       });
     };
-  }, [actions]);
+  }, []);
 
+  console.log(nodes);
   return (
     <group ref={group} {...props} dispose={null}>
       <group name="Scene">
@@ -146,7 +166,13 @@ export function Model(props) {
               geometry={nodes.Male.geometry}
               material={materials.Male}
               skeleton={nodes.Male.skeleton}
-            />
+            >
+              <meshStandardMaterial
+                color={"black"}
+                roughness={0.4}
+                metalness={0.6}
+              />
+            </skinnedMesh>
             <skinnedMesh
               name="Male_1"
               geometry={nodes.Male_1.geometry}
@@ -202,7 +228,13 @@ export function Model(props) {
               geometry={nodes.Female.geometry}
               material={materials.Female}
               skeleton={nodes.Female.skeleton}
-            />
+            >
+              <meshStandardMaterial
+                color={"black"}
+                roughness={0.4}
+                metalness={0.6}
+              />
+            </skinnedMesh>
             <skinnedMesh
               name="Female_1"
               geometry={nodes.Female_1.geometry}
@@ -225,7 +257,13 @@ export function Model(props) {
           <primitive object={nodes.CTRL_IK_ARM_R_1} />
           <primitive object={nodes.CTRL_IK_ARM_L_1} />
         </group>
-        <group name="__OUTER_BOARD">
+        <group
+          onPointerMove={(e) => {
+            e.stopPropagation();
+            if (isAnimRunning) return;
+          }}
+          name="__OUTER_BOARD"
+        >
           <mesh
             name="Cube064"
             castShadow
@@ -238,8 +276,10 @@ export function Model(props) {
             castShadow
             receiveShadow
             geometry={nodes.Cube064_1.geometry}
-            material={materials["Outer_Board.001"]}
-          />
+            // material={materials["Outer_Board.001"]}
+          >
+            <meshStandardMaterial color={"black"} />
+          </mesh>
           <mesh
             name="Cube064_2"
             castShadow
