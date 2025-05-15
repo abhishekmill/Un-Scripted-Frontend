@@ -111,7 +111,7 @@ export function Model(props) {
       actions["Male_Move_Knight"] &&
       actions["Female_Move_Knight"]
     ) {
-      chessWobble();
+      // chessWobble();
     }
 
     return () => {
