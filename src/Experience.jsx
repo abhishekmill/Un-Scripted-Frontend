@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
 import {
@@ -12,6 +12,8 @@ import { Leva, useControls } from "leva";
 import { Model } from "./Model";
 import Animation from "./Animation";
 import { Robot } from "./Robot";
+import Overlay from "./Overlay";
+import LetsTalk from "./LetsTalk";
 
 const Experience = () => {
   const { intensity, position } = useControls("Light", {
@@ -23,9 +25,18 @@ const Experience = () => {
     },
   });
 
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  useEffect(() => {
+    console.log(isMenuOpen);
+  }, [isMenuOpen]);
   return (
     <div className="w-full h-screen">
-      <Leva collapsed />
+      <LetsTalk setIsMenuOpen={setIsMenuOpen} isMenuOpen={isMenuOpen} />
+      <Leva collapsed hidden />
+
+      <Overlay setIsMenuOpen={setIsMenuOpen} isMenuOpen={isMenuOpen} />
+
       <Canvas
         shadows
         dpr={[1, 2]}
@@ -49,7 +60,7 @@ const Experience = () => {
         <ambientLight intensity={0.4} />
         {/* <OrbitControls /> */}
 
-        <group position={[0, -3.7, 0]} scale={3}>
+        <group position={[0, -3.9, 0]} scale={2.7}>
           <Model />
           {/* <Robot /> */}
         </group>

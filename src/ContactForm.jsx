@@ -3,12 +3,24 @@ import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 
 const validationSchema = Yup.object({
-  name: Yup.string().required("Name is required"),
-  email: Yup.string().email("Invalid email").required("Email is required"),
-  cc: Yup.string().required("CC is required"),
-  phone: Yup.string().required("Phone number is required"),
-  company: Yup.string().required("Company is required"),
-  message: Yup.string().required("Message is required"),
+  name: Yup.string().required(
+    "Please enter a valid name (only letters, at least 2 characters)."
+  ),
+  email: Yup.string()
+    .email("Please enter a valid email address.")
+    .required("Please enter a valid email address."),
+  cc: Yup.string().required(
+    "Please enter a valid country code (e.g., +1, +91)."
+  ),
+  phone: Yup.string().required(
+    "Please enter a valid phone number (10 to 15 digits)."
+  ),
+  company: Yup.string().required(
+    "Company is requiredPlease enter a valid phone number (10 to 15 digits)."
+  ),
+  message: Yup.string().required(
+    "Your message should be at least 10 characters long."
+  ),
 });
 
 const ContactForm = () => {
@@ -42,7 +54,7 @@ const ContactForm = () => {
         <ErrorMessage
           name="name"
           component="div"
-          className="text-red-500 text-sm mb-2"
+          className="   text-white text-xs mb-2"
         />
 
         {/* Email */}
@@ -56,7 +68,7 @@ const ContactForm = () => {
         <ErrorMessage
           name="email"
           component="div"
-          className="text-red-500 text-sm mb-2"
+          className="   text-white text-xs mb-2"
         />
 
         {/* Phone */}
@@ -77,12 +89,12 @@ const ContactForm = () => {
           <ErrorMessage
             name="cc"
             component="div"
-            className="text-red-500 text-sm mb-2 w-1/3"
+            className="   text-white text-xs mb-2 w-1/3"
           />
           <ErrorMessage
             name="phone"
             component="div"
-            className="text-red-500 text-sm mb-2 w-2/3"
+            className="   text-white text-xs mb-2 w-2/3"
           />
         </div>
 
@@ -96,7 +108,7 @@ const ContactForm = () => {
         <ErrorMessage
           name="company"
           component="div"
-          className="text-red-500 text-sm mb-2"
+          className="   text-white text-xs mb-2"
         />
 
         {/* Message */}
@@ -110,7 +122,7 @@ const ContactForm = () => {
         <ErrorMessage
           name="message"
           component="div"
-          className="text-red-500 text-sm mb-2"
+          className="   text-white text-xs mb-2"
         />
 
         {/* Submit Button */}
