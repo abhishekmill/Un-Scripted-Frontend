@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useGLTF, useAnimations, Box } from "@react-three/drei";
 import * as THREE from "three";
+import { bleach } from "three/examples/jsm/tsl/display/BleachBypass.js";
 export function Model(props) {
   const group = useRef();
   const { nodes, materials, animations } = useGLTF(
@@ -271,8 +272,14 @@ export function Model(props) {
             castShadow
             receiveShadow
             geometry={nodes.Cube064.geometry}
-            material={materials.Outer_Board}
-          />
+            // material={materials.Outer_Board}
+          >
+            <meshStandardMaterial
+              metalness={0.8}
+              roughness={0.3}
+              color={"#222222"}
+            />
+          </mesh>
           <mesh
             name="Cube064_1"
             castShadow
@@ -287,8 +294,10 @@ export function Model(props) {
             castShadow
             receiveShadow
             geometry={nodes.Cube064_2.geometry}
-            material={materials.Chess_Board_GREY}
-          />
+            // material={materials.Chess_Board_GREY}
+          >
+            <meshStandardMaterial color={"#191919"} />
+          </mesh>
           <mesh
             name="Cube064_3"
             castShadow
