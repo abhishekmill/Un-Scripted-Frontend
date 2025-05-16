@@ -181,7 +181,13 @@ export function Model(props) {
               geometry={nodes.Male_1.geometry}
               material={materials.Mask}
               skeleton={nodes.Male_1.skeleton}
-            />
+            >
+              <meshStandardMaterial
+                color={"#222222"}
+                metalness={0}
+                roughness={1}
+              />{" "}
+            </skinnedMesh>
             <skinnedMesh
               name="Male_2"
               geometry={nodes.Male_2.geometry}
@@ -241,9 +247,15 @@ export function Model(props) {
             <skinnedMesh
               name="Female_1"
               geometry={nodes.Female_1.geometry}
-              material={materials.Mask}
+              // material={materials.Mask}
               skeleton={nodes.Female_1.skeleton}
-            />
+            >
+              <meshStandardMaterial
+                color={"#222222"}
+                metalness={0}
+                roughness={1}
+              />
+            </skinnedMesh>
             <skinnedMesh
               name="Female_2"
               geometry={nodes.Female_2.geometry}
