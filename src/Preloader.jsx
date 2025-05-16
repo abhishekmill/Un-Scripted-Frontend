@@ -2,9 +2,13 @@ import React from "react";
 
 import { Typewriter } from "react-simple-typewriter";
 
-const Preloader = () => {
+const Preloader = ({ isLoaded }) => {
   return (
-    <div className="w-full h-screen flex-col  flex justify-center items-center ">
+    <div
+      className={` ${
+        isLoaded ? "opacity-0 pointer-events-none " : " opacity-100"
+      } absolute top-0 bg-black z-50 duration-300  w-full h-screen flex-col  flex justify-center items-center `}
+    >
       <div className="w-120 ">
         <video
           loop
