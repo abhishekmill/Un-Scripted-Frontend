@@ -4,8 +4,17 @@ import { Typewriter } from "react-simple-typewriter";
 
 const Preloader = () => {
   return (
-    <div className="w-full h-screen   ">
-      <div></div>
+    <div className="w-full h-screen flex-col  flex justify-center items-center ">
+      <div className="w-120 ">
+        <video
+          loop
+          autoPlay
+          muted
+          playsInlineautoPlay={true}
+          src="/loading-screen.mp4"
+        ></video>
+      </div>
+      <TypewritterEffect />
     </div>
   );
 };
@@ -14,7 +23,7 @@ export default Preloader;
 
 const TypewritterEffect = () => {
   return (
-    <div className="text-white">
+    <div className="text-white  text-lg">
       {" "}
       <Typewriter
         words={[
@@ -33,8 +42,8 @@ const TypewritterEffect = () => {
         loop={true}
         cursor
         cursorStyle=""
-        typeSpeed={70}
-        deleteSpeed={50}
+        typeSpeed={20}
+        deleteSpeed={30}
         delaySpeed={1000}
         // onLoopDone={handleDone}
         // onType={handleType}
