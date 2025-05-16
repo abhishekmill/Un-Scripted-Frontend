@@ -3,7 +3,9 @@ import { useGLTF, useAnimations, Box } from "@react-three/drei";
 import * as THREE from "three";
 export function Model(props) {
   const group = useRef();
-  const { nodes, materials, animations } = useGLTF("/3D_Model/Robot_M_F.glb");
+  const { nodes, materials, animations } = useGLTF(
+    "/3D_Model/Robot_M_F-transformed.glb"
+  );
   const { actions } = useAnimations(animations, group);
 
   console.log(actions);
@@ -325,4 +327,4 @@ export function Model(props) {
   );
 }
 
-useGLTF.preload("/3D_Model/Robot_M_F.glb");
+useGLTF.preload("/3D_Model/Robot_M_F-transformed.glb");
