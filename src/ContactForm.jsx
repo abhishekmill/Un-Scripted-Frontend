@@ -43,7 +43,7 @@ const ContactForm = () => {
       validationSchema={validationSchema}
       onSubmit={handleSubmit}
     >
-      <Form className=" w-lg mx-auto text-white">
+      <Form className=" lg:w-lg px-4 mx-auto text-white">
         {/* Name */}
         <label className="block mb-1">Name</label>
         <Field

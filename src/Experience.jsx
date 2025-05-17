@@ -31,46 +31,47 @@ const Experience = () => {
     console.log(isMenuOpen);
   }, [isMenuOpen]);
   return (
-    <div className="w-full h-screen">
+    <div className="w-full h-screen ">
       <LetsTalk setIsMenuOpen={setIsMenuOpen} isMenuOpen={isMenuOpen} />
       <Leva collapsed hidden />
 
       <Overlay setIsMenuOpen={setIsMenuOpen} isMenuOpen={isMenuOpen} />
+      <div className="  h-screen">
+        <Canvas
+          shadows
+          dpr={[1, 2]}
+          gl={{ antialias: false }}
+          camera={{ position: [0, 1.5, 5], fov: 45 }}
+        >
+          <directionalLight
+            position={[position.x, position.y, position.z]}
+            intensity={intensity}
+            castShadow
+            shadow-mapSize-width={1024}
+            shadow-mapSize-height={1024}
+          />
+          <spotLight
+            position={[position.x, position.y, position.z]}
+            angle={0.5}
+            penumbra={0.3}
+            intensity={intensity}
+            castShadow
+          />
+          <ambientLight intensity={0.4} />
+          {/* <OrbitControls /> */}
 
-      <Canvas
-        shadows
-        dpr={[1, 2]}
-        gl={{ antialias: false }}
-        camera={{ position: [0, 1.5, 5], fov: 45 }}
-      >
-        <directionalLight
-          position={[position.x, position.y, position.z]}
-          intensity={intensity}
-          castShadow
-          shadow-mapSize-width={1024}
-          shadow-mapSize-height={1024}
-        />
-        <spotLight
-          position={[position.x, position.y, position.z]}
-          angle={0.5}
-          penumbra={0.3}
-          intensity={intensity}
-          castShadow
-        />
-        <ambientLight intensity={0.4} />
-        {/* <OrbitControls /> */}
+          <group position={[0, -3.9, 0]} scale={2.7}>
+            <Model />
+            {/* <Robot /> */}
+          </group>
 
-        <group position={[0, -3.9, 0]} scale={2.7}>
-          <Model />
-          {/* <Robot /> */}
-        </group>
-
-        <EffectComposer multisampling={5}>
-          <SMAA />
-          {/* <FXAA /> */}
-          {/* <Bloom intensity={0.6} luminanceThreshold={0.2} /> */}
-        </EffectComposer>
-      </Canvas>
+          <EffectComposer multisampling={5}>
+            <SMAA />
+            {/* <FXAA /> */}
+            {/* <Bloom intensity={0.6} luminanceThreshold={0.2} /> */}
+          </EffectComposer>
+        </Canvas>
+      </div>
     </div>
   );
 };

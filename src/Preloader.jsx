@@ -9,7 +9,7 @@ const Preloader = ({ isLoaded }) => {
         isLoaded ? "opacity-0 pointer-events-none " : " opacity-100"
       } absolute top-0 bg-black z-50 duration-300  w-full h-screen flex-col  flex justify-center items-center `}
     >
-      <div className="w-120 ">
+      <div className="lg:w-120  w-full">
         <video
           loop
           autoPlay
