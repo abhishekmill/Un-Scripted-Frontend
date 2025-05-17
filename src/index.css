@@ -1,7 +1,16 @@
-@import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100..900;1,100..900&display=swap");
-
 @import "tailwindcss";
 
+@font-face {
+  font-family: "PoppinsLocal"; /* Use a name that matches the actual font */
+  src: url("/Poppins-Regular.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+.font-poppins {
+  font-family: "PoppinsLocal", sans-serif;
+}
+
 body {
-  /* font-family: "Poppins", sans-serif; */
+  font-family: "PoppinsLocal", sans-serif;
 }

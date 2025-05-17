@@ -3,6 +3,7 @@ import Experience from "./Experience";
 import ContactForm from "./ContactForm";
 import LetsTalk from "./LetsTalk";
 import Preloader from "./Preloader";
+import NavBar from "./NavBar";
 
 const App = () => {
   const [isLoaded, setIsLoaded] = useState(false);

@@ -14,6 +14,7 @@ import Animation from "./Animation";
 import { Robot } from "./Robot";
 import Overlay from "./Overlay";
 import LetsTalk from "./LetsTalk";
+import NavBar from "./NavBar";
 
 const Experience = () => {
   const { intensity, position } = useControls("Light", {
@@ -32,6 +33,8 @@ const Experience = () => {
   }, [isMenuOpen]);
   return (
     <div className="w-full h-screen ">
+      <NavBar setIsMenuOpen={setIsMenuOpen} isMenuOpen={isMenuOpen} />
+
       <LetsTalk setIsMenuOpen={setIsMenuOpen} isMenuOpen={isMenuOpen} />
       <Leva collapsed hidden />
 
